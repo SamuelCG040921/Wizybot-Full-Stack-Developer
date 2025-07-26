@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OpenaiService } from 'src/openai/openai.service';
 import { searchProducts } from './tools/search-products';
+import { convertCurrencies } from './tools/convert-currencies';
 
 @Injectable()
 export class ChatbotService {
@@ -12,8 +13,23 @@ export class ChatbotService {
     const toolCall = result.tool_calls?.[0];
 
     if (toolCall && toolCall.function?.name) {
+
       const functionName = toolCall.function.name;
-      const args = JSON.parse(toolCall.function.arguments || '{}');
+      let args: any = {};
+
+      try {
+        args =
+          typeof toolCall.function.arguments === 'string'
+            ? JSON.parse(toolCall.function.arguments)
+            : toolCall.function.arguments;
+      } catch (e) {
+        console.error(
+          '❌ Error parsing arguments:',
+          toolCall.function.arguments,
+        );
+        throw new Error('Invalid function arguments received from OpenAI.');
+      }
+
       const toolCallId = toolCall.id;
 
       let functionResult: any;
@@ -21,14 +37,18 @@ export class ChatbotService {
       if (functionName === 'searchProducts') {
         functionResult = await searchProducts(args.query);
       } else if (functionName === 'convertCurrencies') {
-        functionResult = { message: 'Currency conversion not implemented yet' };
+        functionResult = await convertCurrencies(
+          args.amount,
+          args.fromCurrency,
+          args.toCurrency,
+        );
       } else {
         return `Tool ${functionName} not recognized.`;
       }
 
       const finalResponse = await this.openaiService.completeToolResult(
         query,
-        toolCall, 
+        toolCall,
         functionResult,
       );
 
