@@ -77,4 +77,49 @@ describe('ChatbotService', () => {
       ],
     );
   });
+
+  it('should return plain message if no tool_calls', async () => {
+    (mockOpenaiService.askWithToolCalling as jest.Mock).mockResolvedValue({
+      content: 'Just answering directly.',
+      tool_calls: undefined,
+    });
+
+    const result = await service.handleQuery('Hello!');
+    expect(result).toBe('Just answering directly.');
+  });
+
+  it('should return message for unknown tool', async () => {
+    (mockOpenaiService.askWithToolCalling as jest.Mock).mockResolvedValue({
+      tool_calls: [
+        {
+          id: 'call_2',
+          function: {
+            name: 'unknownTool',
+            arguments: '{}',
+          },
+        },
+      ],
+    });
+
+    const result = await service.handleQuery('Use a tool please');
+    expect(result).toBe('Tool unknownTool not recognized.');
+  });
+
+  it('should throw error if tool arguments are malformed JSON', async () => {
+    (mockOpenaiService.askWithToolCalling as jest.Mock).mockResolvedValue({
+      tool_calls: [
+        {
+          id: 'call_3',
+          function: {
+            name: 'searchProducts',
+            arguments: 'not-json',
+          },
+        },
+      ],
+    });
+
+    await expect(service.handleQuery('Break the parser')).rejects.toThrow(
+      'Invalid function arguments received from OpenAI.',
+    );
+  });
 });
