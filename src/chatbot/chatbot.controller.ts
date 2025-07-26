@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ChatbotService } from './chatbot.service';
 import { UseryQueryDto } from './dto/user-query.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -14,6 +14,7 @@ export class ChatbotController {
    * Internally, this may trigger tools like searchProducts or convertCurrencies.
    */
   @Post()
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Ask a question to the assistant',
     description:
