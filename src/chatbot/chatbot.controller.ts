@@ -7,6 +7,12 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class ChatbotController {
   constructor(private readonly chatbotService: ChatbotService) {}
 
+  /**
+   * POST /chatbot
+   * 
+   * Accepts a user query and returns an AI-generated response.
+   * Internally, this may trigger tools like searchProducts or convertCurrencies.
+   */
   @Post()
   @ApiOperation({
     summary: 'Ask a question to the assistant',
