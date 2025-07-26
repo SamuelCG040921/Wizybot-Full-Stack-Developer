@@ -79,6 +79,12 @@ Or:
 }
 ```
 
+## ✅ Tests
+
+- Unit tests: `npm run test`
+- Coverage: `npm run test:cov`
+- End-to-end (E2E): `npm run test:e2e`
+
 ## 🧪 Project structure
 ```bash
 src/
