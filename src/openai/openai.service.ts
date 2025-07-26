@@ -90,7 +90,7 @@ export class OpenaiService {
         { role: 'user', content: userQuery },
         {
           role: 'assistant',
-          tool_calls: [toolCall], // 👈 este es el mensaje anterior que causaba el 400 si faltaba
+          tool_calls: [toolCall],
         },
         {
           role: 'tool',
