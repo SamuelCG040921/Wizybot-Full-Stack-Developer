@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { OpenaiService } from 'src/openai/openai.service';
+import { OpenaiService } from '../openai/openai.service';
 import { searchProducts } from './tools/search-products';
 import { convertCurrencies } from './tools/convert-currencies';
 
